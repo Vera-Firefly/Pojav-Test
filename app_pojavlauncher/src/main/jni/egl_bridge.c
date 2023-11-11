@@ -246,7 +246,7 @@ int pojavInitOpenGL() {
         set_osm_bridge_tbl();
     } else if (strncmp("opengles", renderer, 8) == 0) {
         pojav_environ->config_renderer = RENDERER_GL4ES;
-        //loadSymbols();
+        set_gl_bridge_tbl();
     } else if (strcmp(renderer, "vulkan_zink") == 0) {
         pojav_environ->config_renderer = RENDERER_VK_ZINK;
         load_vulkan();
@@ -340,14 +340,6 @@ int pojavInitOpenGL() {
         pthread_t t;
         pthread_create(&t, NULL, egl_make_current, (void *)ctx);
         usleep(100*1000); // need enough time for the server to init
-    }
-
-    if (pojav_environ->config_renderer == RENDERER_VIRGL) {
-        if(OSMesaCreateContext_p == NULL) {
-            printf("OSMDroid: %s\n",dlerror());
-            return 0;
-        }
-        br_setup_window();
     }
 
     if(br_init()) {
