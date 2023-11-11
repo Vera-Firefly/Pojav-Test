@@ -406,6 +406,7 @@ EXTERNAL_API void pojavSwapBuffers() {
             OSMesaMakeCurrent_p(ctx,buf.bits,GL_UNSIGNED_BYTE,pojav_environ->savedWidth,pojav_environ->savedHeight);
             glFinish_p();
             vtest_swap_buffers_p();
+            br_swap_buffers();
             ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
             ANativeWindow_lock(pojav_environ->pojavWindow,&buf,NULL);
         } break;
