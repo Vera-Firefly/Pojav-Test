@@ -456,6 +456,7 @@ EXTERNAL_API void pojavSwapInterval(int interval) {
     switch (pojav_environ->config_renderer) {
         case RENDERER_VIRGL: {
             eglSwapInterval_p(potatoBridge.eglDisplay, interval);
+            br_swap_interval(interval);
         } break;
     }
     br_swap_interval(interval);
