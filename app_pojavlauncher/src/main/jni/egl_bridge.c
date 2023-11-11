@@ -417,7 +417,6 @@ EXTERNAL_API void pojavMakeCurrent(void* window) {
     br_make_current((basic_render_window_t*)window);
     if(getenv("POJAV_BIG_CORE_AFFINITY") != NULL) bigcore_set_affinity();
     if (pojav_environ->config_renderer == RENDERER_VIRGL) {
-        br_make_current((basic_render_window_t*)window);
         printf("OSMDroid: making current\n");
         OSMesaMakeCurrent_p((OSMesaContext)window,setbuffer,GL_UNSIGNED_BYTE,pojav_environ->savedWidth,pojav_environ->savedHeight);
 
