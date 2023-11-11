@@ -342,6 +342,13 @@ int pojavInitOpenGL() {
         usleep(100*1000); // need enough time for the server to init
     }
 
+    if (pojav_environ->config_renderer == RENDERER_VIRGL) {
+        if(OSMesaCreateContext_p == NULL) {
+            printf("OSMDroid: %s\n",dlerror());
+            return 0;
+        }
+    }
+
     if(br_init()) {
         br_setup_window();
     }
