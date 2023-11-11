@@ -244,6 +244,7 @@ int pojavInitOpenGL() {
             printf("VirGL: OSMesa buffer flush is DISABLED!\n");
         }
         loadSymbolsVirGL();
+        set_osm_bridge_tbl();
     } else if (strncmp("opengles", renderer, 8) == 0) {
         pojav_environ->config_renderer = RENDERER_GL4ES;
         //loadSymbols();
