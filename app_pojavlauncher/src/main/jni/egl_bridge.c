@@ -387,7 +387,6 @@ EXTERNAL_API void pojavSwapBuffers() {
         case RENDERER_VIRGL: {
             glFinish_p();
             vtest_swap_buffers_p();
-            br_swap_buffers();
         } break;
     }
 }
