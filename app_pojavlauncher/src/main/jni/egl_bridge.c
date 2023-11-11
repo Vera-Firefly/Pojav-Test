@@ -465,6 +465,11 @@ Java_org_lwjgl_vulkan_VK_getVulkanDriverHandle(ABI_COMPAT JNIEnv *env, ABI_COMPA
 }
 
 EXTERNAL_API void pojavSwapInterval(int interval) {
+    switch (pojav_environ->config_renderer) {
+        case RENDERER_VIRGL: {
+            eglSwapInterval_p(potatoBridge.eglDisplay, interval);
+        } break;
+    }
     br_swap_interval(interval);
 }
 
