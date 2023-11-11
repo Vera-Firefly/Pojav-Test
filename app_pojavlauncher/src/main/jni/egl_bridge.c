@@ -342,19 +342,6 @@ int pojavInitOpenGL() {
         usleep(100*1000); // need enough time for the server to init
     }
 
-    if (pojav_environ->config_renderer == RENDERER_VIRGL) {
-        if(OSMesaCreateContext_p == NULL) {
-            printf("OSMDroid: %s\n",dlerror());
-            return 0;
-        }
-    }
-
-    if (pojav_environ->config_renderer == RENDERER_VIRGL) {
-        if(br_init()) {
-            br_setup_window();
-        }
-    }
-
     if(br_init()) {
         br_setup_window();
     }
@@ -452,15 +439,6 @@ EXTERNAL_API void pojavMakeCurrent(void* window) {
 EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
     if (pojav_environ->config_renderer == RENDERER_VULKAN) {
         return (void *)pojav_environ->pojavWindow;
-    }
-    if (pojav_environ->config_renderer == RENDERER_VIRGL) {
-        printf("OSMDroid: generating context\n");
-        void* ctx = OSMesaCreateContext_p(OSMESA_RGBA,contextSrc);
-        printf("OSMDroid: context=%p\n",ctx);
-        return ctx;
-    }
-    if (pojav_environ->config_renderer == RENDERER_VIRGL) {
-        return br_init_context((basic_render_window_t*)contextSrc);
     }
     return br_init_context((basic_render_window_t*)contextSrc);
 }
