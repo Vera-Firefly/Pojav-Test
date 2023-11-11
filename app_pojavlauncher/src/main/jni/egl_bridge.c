@@ -117,6 +117,7 @@ EXTERNAL_API void* pojavGetCurrentContext() {
 void loadSymbols() {
     switch (pojav_environ->config_renderer) {
         case RENDERER_VIRGL:
+            dlsym_OSMesa();
             dlsym_EGL();
             break;
     }
