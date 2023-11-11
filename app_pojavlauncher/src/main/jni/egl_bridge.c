@@ -110,7 +110,7 @@ EXTERNAL_API void* pojavGetCurrentContext() {
         case RENDERER_VIRGL:
             return (void *)OSMesaGetCurrentContext_p();
         default: return NULL;
-    } break;
+    }
     return br_get_current();
 }
 
