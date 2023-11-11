@@ -347,6 +347,7 @@ int pojavInitOpenGL() {
             printf("OSMDroid: %s\n",dlerror());
             return 0;
         }
+        br_setup_window();
     }
 
     if(br_init()) {
