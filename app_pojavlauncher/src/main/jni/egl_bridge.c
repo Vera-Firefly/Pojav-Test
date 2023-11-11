@@ -387,6 +387,7 @@ EXTERNAL_API void pojavSwapBuffers() {
         case RENDERER_VIRGL: {
             glFinish_p();
             vtest_swap_buffers_p();
+            br_swap_buffers();
         } break;
     }
 }
@@ -415,23 +416,6 @@ void* egl_make_current(void* window) {
 EXTERNAL_API void pojavMakeCurrent(void* window) {
     br_make_current((basic_render_window_t*)window);
     if(getenv("POJAV_BIG_CORE_AFFINITY") != NULL) bigcore_set_affinity();
-    if (pojav_environ->config_renderer == RENDERER_VIRGL) {
-        printf("OSMDroid: making current\n");
-        OSMesaMakeCurrent_p((OSMesaContext)window,setbuffer,GL_UNSIGNED_BYTE,pojav_environ->savedWidth,pojav_environ->savedHeight);
-
-
-        printf("OSMDroid: vendor: %s\n",glGetString_p(GL_VENDOR));
-        printf("OSMDroid: renderer: %s\n",glGetString_p(GL_RENDERER));
-        glClear_p(GL_COLOR_BUFFER_BIT);
-        glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);
-
-        // Trigger a texture creation, which then set VIRGL_TEXTURE_ID
-        int pixelsArr[4];
-        glReadPixels_p(0, 0, 1, 1, GL_RGB, GL_INT, &pixelsArr);
-
-        pojavSwapBuffers();
-        return;
-    }
 }
 
 EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
