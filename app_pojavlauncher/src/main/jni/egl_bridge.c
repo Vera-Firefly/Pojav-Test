@@ -106,6 +106,11 @@ Java_net_kdt_pojavlaunch_utils_JREUtils_releaseBridgeWindow(ABI_COMPAT JNIEnv *e
 }
 
 EXTERNAL_API void* pojavGetCurrentContext() {
+    switch (pojav_environ->config_renderer) {
+        case RENDERER_VIRGL:
+            return (void *)OSMesaGetCurrentContext_p();
+        default: return NULL;
+    } break;
     return br_get_current();
 }
 
@@ -244,7 +249,6 @@ int pojavInitOpenGL() {
         }
         loadSymbolsVirGL();
         set_osm_bridge_tbl();
-        set_gl_bridge_tbl();
     } else if (strncmp("opengles", renderer, 8) == 0) {
         pojav_environ->config_renderer = RENDERER_GL4ES;
         set_gl_bridge_tbl();
@@ -343,6 +347,13 @@ int pojavInitOpenGL() {
         usleep(100*1000); // need enough time for the server to init
     }
 
+    if (pojav_environ->config_renderer == RENDERER_VIRGL) {
+        if(OSMesaCreateContext_p == NULL) {
+            printf("OSMDroid: %s\n",dlerror());
+            return 0;
+        }
+    }
+
     if(br_init()) {
         br_setup_window();
     }
@@ -386,9 +397,16 @@ EXTERNAL_API void pojavSwapBuffers() {
     }
     switch (pojav_environ->config_renderer) {
         case RENDERER_VIRGL: {
+            OSMesaContext ctx = OSMesaGetCurrentContext_p();
+            if(ctx == NULL) {
+                printf("Zink: attempted to swap buffers without context!");
+                break;
+            }
+            OSMesaMakeCurrent_p(ctx,buf.bits,GL_UNSIGNED_BYTE,pojav_environ->savedWidth,pojav_environ->savedHeight);
             glFinish_p();
             vtest_swap_buffers_p();
-            br_swap_buffers();
+            ANativeWindow_unlockAndPost(pojav_environ->pojavWindow);
+            ANativeWindow_lock(pojav_environ->pojavWindow,&buf,NULL);
         } break;
     }
 }
@@ -440,6 +458,12 @@ EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
     if (pojav_environ->config_renderer == RENDERER_VULKAN) {
         return (void *)pojav_environ->pojavWindow;
     }
+    if (pojav_environ->config_renderer == RENDERER_VIRGL) {
+        printf("OSMDroid: generating context\n");
+        void* ctx = OSMesaCreateContext_p(OSMESA_RGBA,contextSrc);
+        printf("OSMDroid: context=%p\n",ctx);
+        return ctx;
+    }
     return br_init_context((basic_render_window_t*)contextSrc);
 }
 
@@ -457,7 +481,6 @@ EXTERNAL_API void pojavSwapInterval(int interval) {
     switch (pojav_environ->config_renderer) {
         case RENDERER_VIRGL: {
             eglSwapInterval_p(potatoBridge.eglDisplay, interval);
-            br_swap_interval(interval);
         } break;
     }
     br_swap_interval(interval);
