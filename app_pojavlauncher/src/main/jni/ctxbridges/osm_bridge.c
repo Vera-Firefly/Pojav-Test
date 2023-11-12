@@ -6,6 +6,7 @@
 #include <environ/environ.h>
 #include <android/log.h>
 #include "osm_bridge.h"
+#include "egl_loader.h"
 
 static const char* g_LogTag = "GLBridge";
 static __thread osm_render_window_t* currentBundle;
