@@ -16,12 +16,7 @@ static __thread osm_render_window_t* currentBundle;
 static char no_render_buffer[4];
 
 bool osm_init() {
-    switch (pojav_environ->config_renderer) {
-        case RENDERER_VIRGL:
-            dlsym_OSMesa();
-            dlsym_EGL();
-            break;
-    }
+    dlsym_EGL();
     dlsym_OSMesa();
     return true; // no more specific initialization required
 }
