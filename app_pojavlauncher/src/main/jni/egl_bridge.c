@@ -109,6 +109,14 @@ EXTERNAL_API void* pojavGetCurrentContext() {
     return br_get_current();
 }
 
+void loadSymbols() {
+    switch (pojav_environ->config_renderer) {
+        case RENDERER_VIRGL:
+            dlsym_EGL();
+            break;
+    }
+}
+
 //#define ADRENO_POSSIBLE
 #ifdef ADRENO_POSSIBLE
 //Checks if your graphics are Adreno. Returns true if your graphics are Adreno, false otherwise or if there was an error
@@ -203,7 +211,7 @@ void load_vulkan() {
 
 bool loadSymbolsVirGL() {
     pojav_environ->config_renderer = RENDERER_VIRGL;
-    osm_init();
+    loadSymbols();
 
     char* fileName = calloc(1, 1024);
 
