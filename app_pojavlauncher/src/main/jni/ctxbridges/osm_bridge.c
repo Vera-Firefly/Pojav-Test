@@ -8,6 +8,8 @@
 #include "osm_bridge.h"
 #include "egl_loader.h"
 
+#define RENDERER_VIRGL 3
+
 static const char* g_LogTag = "GLBridge";
 static __thread osm_render_window_t* currentBundle;
 // a tiny buffer for rendering when there's nowhere t render
