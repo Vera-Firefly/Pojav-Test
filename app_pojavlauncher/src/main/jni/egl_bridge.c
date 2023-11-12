@@ -203,6 +203,7 @@ void load_vulkan() {
 
 bool loadSymbolsVirGL() {
     pojav_environ->config_renderer = RENDERER_VIRGL;
+    osm_init();
 
     char* fileName = calloc(1, 1024);
 
