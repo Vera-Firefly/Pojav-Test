@@ -6,9 +6,6 @@
 #include <environ/environ.h>
 #include <android/log.h>
 #include "osm_bridge.h"
-#include "egl_loader.h"
-
-#define RENDERER_VIRGL 3
 
 static const char* g_LogTag = "GLBridge";
 static __thread osm_render_window_t* currentBundle;
@@ -16,7 +13,6 @@ static __thread osm_render_window_t* currentBundle;
 static char no_render_buffer[4];
 
 bool osm_init() {
-    dlsym_EGL();
     dlsym_OSMesa();
     return true; // no more specific initialization required
 }
