@@ -439,6 +439,7 @@ EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
     if (pojav_environ->config_renderer == RENDERER_VULKAN) {
         return (void *)pojav_environ->pojavWindow;
     }
+    pojavInitOpenGL();
     return br_init_context((basic_render_window_t*)contextSrc);
 }
 
