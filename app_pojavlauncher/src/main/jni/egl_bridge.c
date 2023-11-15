@@ -391,25 +391,21 @@ EXTERNAL_API void pojavSetWindowHint(int hint, int value) {
     }
 }
 
+EXTERNAL_API void pojavSwapBuffers() {
+    br_swap_buffers();
+}
+
 ANativeWindow_Buffer buf;
 int32_t stride;
 bool stopSwapBuffers;
-void pojavSwapBuffers() {
+void pojavSB() {
     if (stopSwapBuffers) {
         return;
     }
     switch (pojav_environ->config_renderer) {
-        case RENDERER_GL4ES: {
-            br_swap_buffers();
-        } break;
-
         case RENDERER_VIRGL: {
             glFinish_p();
             vtest_swap_buffers_p();
-        } break;
-
-        case RENDERER_VK_ZINK: {
-            br_swap_buffers();
         } break;
     }
 }
@@ -451,7 +447,7 @@ void pMC(void* window) {
         int pixelsArr[4];
         glReadPixels_p(0, 0, 1, 1, GL_RGB, GL_INT, &pixelsArr);
 
-        pojavSwapBuffers();
+        pojavSB();
         return;
     }
 }
