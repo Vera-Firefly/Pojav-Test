@@ -236,8 +236,7 @@ bool loadSymbolsVirGL() {
     free(fileName);
 }
 
-int pojavInitOpenGL() {
-    // Only affects GL4ES as of now
+int pojavIOPG() {
     const char *forceVsync = getenv("FORCE_VSYNC");
     if (strcmp(forceVsync, "true") == 0)
         pojav_environ->force_vsync = true;
@@ -252,14 +251,6 @@ int pojavInitOpenGL() {
             printf("VirGL: OSMesa buffer flush is DISABLED!\n");
         }
         loadSymbolsVirGL();
-    } else if (strncmp("opengles", renderer, 8) == 0) {
-        pojav_environ->config_renderer = RENDERER_GL4ES;
-        set_gl_bridge_tbl();
-    } else if (strcmp(renderer, "vulkan_zink") == 0) {
-        pojav_environ->config_renderer = RENDERER_VK_ZINK;
-        load_vulkan();
-        setenv("GALLIUM_DRIVER","zink",1);
-        set_osm_bridge_tbl();
     }
     if (pojav_environ->config_renderer == RENDERER_VIRGL) {
         if (potatoBridge.eglDisplay == NULL || potatoBridge.eglDisplay == EGL_NO_DISPLAY) {
@@ -357,10 +348,32 @@ int pojavInitOpenGL() {
         }
     }
 
+    return 0;
+}
+
+int pojavInitOpenGL() {
+    // Only affects GL4ES as of now
+    const char *forceVsync = getenv("FORCE_VSYNC");
+    if (strcmp(forceVsync, "true") == 0)
+        pojav_environ->force_vsync = true;
+
+    // NOTE: Override for now.
+    const char *renderer = getenv("POJAV_RENDERER");
+    if (strncmp("opengles", renderer, 8) == 0) {
+        pojav_environ->config_renderer = RENDERER_GL4ES;
+        set_gl_bridge_tbl();
+    } else if (strcmp(renderer, "vulkan_zink") == 0) {
+        pojav_environ->config_renderer = RENDERER_VK_ZINK;
+        load_vulkan();
+        setenv("GALLIUM_DRIVER","zink",1);
+        set_osm_bridge_tbl();
+    }
+
     if(gl_init()) {
             br_setup_window();
             return 1;
         }
+
     return 0;
 }
 
@@ -454,7 +467,7 @@ void pMC(void* window) {
 
 void* pCCT(void* contextSrc) {
 
-    pojavInitOpenGL();
+    pojavIOPG();
 
     if (pojav_environ->config_renderer == RENDERER_VIRGL) {
         printf("OSMDroid: generating context\n");
