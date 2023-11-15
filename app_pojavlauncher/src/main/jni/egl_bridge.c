@@ -105,10 +105,11 @@ Java_net_kdt_pojavlaunch_utils_JREUtils_releaseBridgeWindow(ABI_COMPAT JNIEnv *e
 }
 
 EXTERNAL_API void* pojavGetCurrentContext() {
+    return br_get_current();
+}
+
+void* pojavGetCCT() {
     switch (pojav_environ->config_renderer) {
-        case RENDERER_GL4ES:
-        case RENDERER_VK_ZINK:
-            return br_get_current();
         case RENDERER_VIRGL:
             return (void *)OSMesaGetCurrentContext_p();
 
@@ -394,14 +395,21 @@ ANativeWindow_Buffer buf;
 int32_t stride;
 bool stopSwapBuffers;
 void pojavSwapBuffers() {
-    br_swap_buffers();
     if (stopSwapBuffers) {
         return;
     }
     switch (pojav_environ->config_renderer) {
+        case RENDERER_GL4ES: {
+            br_swap_buffers();
+        } break;
+
         case RENDERER_VIRGL: {
             glFinish_p();
             vtest_swap_buffers_p();
+        } break;
+
+        case RENDERER_VK_ZINK: {
+            br_swap_buffers();
         } break;
     }
 }
@@ -427,11 +435,8 @@ void* egl_make_current(void* window) {
     }
 }
 
-EXTERNAL_API void pojavMakeCurrent(void* window) {
+void pMC(void* window) {
     if(getenv("POJAV_BIG_CORE_AFFINITY") != NULL) bigcore_set_affinity();
-    if(pojav_environ->config_renderer == RENDERER_GL4ES) {
-        br_make_current((basic_render_window_t*)window);
-    }
     if (pojav_environ->config_renderer == RENDERER_VIRGL) {
         printf("OSMDroid: making current\n");
         OSMesaMakeCurrent_p((OSMesaContext)window,setbuffer,GL_UNSIGNED_BYTE,pojav_environ->savedWidth,pojav_environ->savedHeight);
@@ -449,17 +454,12 @@ EXTERNAL_API void pojavMakeCurrent(void* window) {
         pojavSwapBuffers();
         return;
     }
-    if (pojav_environ->config_renderer == RENDERER_VK_ZINK) {
-        br_make_current((basic_render_window_t*)window);
-    }
 }
 
-EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
-    return br_init_context((basic_render_window_t*)contextSrc);
-    if (pojav_environ->config_renderer == RENDERER_VULKAN) {
-        return (void *) pojav_environ->pojavWindow;
-    }
+void* pCCT(void* contextSrc) {
+
     pojavInitOpenGL();
+
     if (pojav_environ->config_renderer == RENDERER_VIRGL) {
         printf("OSMDroid: generating context\n");
         void* ctx = OSMesaCreateContext_p(OSMESA_RGBA,contextSrc);
@@ -468,6 +468,17 @@ EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
     }
     printf("Unknown config_renderer value: %i\n", pojav_environ->config_renderer);
     abort();
+}
+
+EXTERNAL_API void pojavMakeCurrent(void* window) {
+    br_make_current((basic_render_window_t*)window);
+}
+
+EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
+    if (pojav_environ->config_renderer == RENDERER_VULKAN) {
+        return (void *) pojav_environ->pojavWindow;
+    }
+    return br_init_context((basic_render_window_t*)contextSrc);
 }
 
 EXTERNAL_API JNIEXPORT jlong JNICALL
