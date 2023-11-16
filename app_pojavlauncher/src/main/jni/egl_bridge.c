@@ -431,7 +431,7 @@ void* egl_make_current(void* window) {
 
 EXTERNAL_API void pojavMakeCurrent(void* window) {
     if(getenv("POJAV_BIG_CORE_AFFINITY") != NULL) bigcore_set_affinity();
-    if(pojav_environ->config_renderer == RENDERER_VK_ZINK || pojav_environ->config_renderer == RENDERER_GL4ES) {
+    if(pojav_environ->config_renderer == RENDERER_GL4ES) {
         br_make_current((basic_render_window_t*)window);
     } else if (pojav_environ->config_renderer == RENDERER_VIRGL) {
         printf("OSMDroid: making current\n");
