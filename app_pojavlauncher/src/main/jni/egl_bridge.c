@@ -1,5 +1,5 @@
 //
-// Modifile by Vera-Firefly on 17.09.2023.
+// Modifile by Vera-Firefly on 17.11.2023.
 //
 #include <jni.h>
 #include <assert.h>
@@ -457,7 +457,7 @@ EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
         return (void *) pojav_environ->pojavWindow;
     }
 
-    if (pojav_environ->config_renderer == RENDERER_VK_ZINK || pojav_environ->config_renderer == RENDERER_GL4ES) {
+    if (pojav_environ->config_renderer == RENDERER_GL4ES) {
         return br_init_context((basic_render_window_t*)contextSrc);
     } else if (pojav_environ->config_renderer == RENDERER_VIRGL) {
         pojavInitOpenGL();
