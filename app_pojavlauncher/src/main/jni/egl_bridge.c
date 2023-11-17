@@ -484,17 +484,6 @@ Java_org_lwjgl_vulkan_VK_getVulkanDriverHandle(ABI_COMPAT JNIEnv *env, ABI_COMPA
     return strtoul(getenv("VULKAN_PTR"), NULL, 0x10);
 }
 
-EXTERNAL_API JNIEXPORT jlong JNICALL
-Java_org_lwjgl_opengl_GL_getGraphicsBufferAddr(ABI_COMPAT JNIEnv *env, ABI_COMPAT jobject thiz) {
-    return (jlong) buf.bits;
-}
-EXTERNAL_API JNIEXPORT jintArray JNICALL
-Java_org_lwjgl_opengl_GL_getNativeWidthHeight(JNIEnv *env, ABI_COMPAT jobject thiz) {
-    jintArray ret = (*env)->NewIntArray(env,2);
-    jint arr[] = {pojav_environ->savedWidth, pojav_environ->savedHeight};
-    (*env)->SetIntArrayRegion(env,ret,0,2,arr);
-    return ret;
-}
 EXTERNAL_API void pojavSwapInterval(int interval) {
     switch (pojav_environ->config_renderer) {
         case RENDERER_GL4ES: {
