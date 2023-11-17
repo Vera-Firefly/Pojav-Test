@@ -105,10 +105,14 @@ Java_net_kdt_pojavlaunch_utils_JREUtils_releaseBridgeWindow(ABI_COMPAT JNIEnv *e
 }
 
 EXTERNAL_API void* pojavGetCurrentContext() {
-    if(pojav_environ->config_renderer == RENDERER_VK_ZINK || pojav_environ->config_renderer == RENDERER_GL4ES) {
-        return br_get_current();
-    } else if(pojav_environ->config_renderer == RENDERER_VIRGL) {
-        return (void *)OSMesaGetCurrentContext_p();
+    switch (pojav_environ->config_renderer) {
+        case RENDERER_GL4ES:
+        case RENDERER_VK_ZINK:
+            return br_get_current();
+        case RENDERER_VIRGL:
+            return (void *)OSMesaGetCurrentContext_p();
+
+        default: return NULL;
     }
 }
 
@@ -390,15 +394,23 @@ EXTERNAL_API void pojavSetWindowHint(int hint, int value) {
 ANativeWindow_Buffer buf;
 int32_t stride;
 bool stopSwapBuffers;
-void pojavSwapBuffers() {
+EXTERNAL_API void pojavSwapBuffers() {
     if (stopSwapBuffers) {
         return;
     }
-    if(pojav_environ->config_renderer == RENDERER_VK_ZINK || pojav_environ->config_renderer == RENDERER_GL4ES) {
-        br_swap_buffers();
-    } else if(pojav_environ->config_renderer == RENDERER_VIRGL) {
-        glFinish_p();
-        vtest_swap_buffers_p();
+    switch (pojav_environ->config_renderer) {
+        case RENDERER_GL4ES: {
+            br_swap_buffers();
+        } break;
+
+        case RENDERER_VIRGL: {
+            glFinish_p();
+            vtest_swap_buffers_p();
+        } break;
+
+        case RENDERER_VK_ZINK: {
+            br_swap_buffers();
+        } break;
     }
 }
 
@@ -484,10 +496,18 @@ Java_org_lwjgl_opengl_GL_getNativeWidthHeight(JNIEnv *env, ABI_COMPAT jobject th
     return ret;
 }
 EXTERNAL_API void pojavSwapInterval(int interval) {
-    if(pojav_environ->config_renderer == RENDERER_VK_ZINK || pojav_environ->config_renderer == RENDERER_GL4ES) {
-        br_swap_interval(interval);
-    } else if(pojav_environ->config_renderer == RENDERER_VIRGL) {
-        eglSwapInterval_p(potatoBridge.eglDisplay, interval);
+    switch (pojav_environ->config_renderer) {
+        case RENDERER_GL4ES: {
+            br_swap_interval(interval);
+        } break;
+        case RENDERER_VIRGL: {
+            eglSwapInterval_p(potatoBridge.eglDisplay, interval);
+        } break;
+
+        case RENDERER_VK_ZINK: {
+            br_swap_interval(interval);
+            printf("eglSwapInterval: NOT IMPLEMENTED YET!\n");
+        } break;
     }
 }
 
