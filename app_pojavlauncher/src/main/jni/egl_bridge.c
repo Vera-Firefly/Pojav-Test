@@ -257,11 +257,9 @@ int pojavInitOpenGL() {
         set_osm_bridge_tbl();
     }
     if(pojav_environ->config_renderer == RENDERER_VK_ZINK || pojav_environ->config_renderer == RENDERER_GL4ES) {
-        if(gl_init()) {
+        if(br_init()) {
             br_setup_window();
-            return 1;
         }
-        return 0;
     }
     if (pojav_environ->config_renderer == RENDERER_VIRGL) {
         if (potatoBridge.eglDisplay == NULL || potatoBridge.eglDisplay == EGL_NO_DISPLAY) {
@@ -486,17 +484,10 @@ Java_org_lwjgl_opengl_GL_getNativeWidthHeight(JNIEnv *env, ABI_COMPAT jobject th
     return ret;
 }
 EXTERNAL_API void pojavSwapInterval(int interval) {
-    switch (pojav_environ->config_renderer) {
-        case RENDERER_GL4ES: {
-            br_swap_interval(interval);
-        } break;
-        case RENDERER_VIRGL: {
-            eglSwapInterval_p(potatoBridge.eglDisplay, interval);
-        } break;
-
-        case RENDERER_VK_ZINK: {
-            br_swap_interval(interval);
-        } break;
+    if(pojav_environ->config_renderer == RENDERER_VK_ZINK || pojav_environ->config_renderer == RENDERER_GL4ES) {
+        br_swap_interval(interval);
+    } else if(pojav_environ->config_renderer == RENDERER_VIRGL) {
+        eglSwapInterval_p(potatoBridge.eglDisplay, interval);
     }
 }
 
