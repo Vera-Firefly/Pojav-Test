@@ -105,13 +105,10 @@ Java_net_kdt_pojavlaunch_utils_JREUtils_releaseBridgeWindow(ABI_COMPAT JNIEnv *e
 }
 
 EXTERNAL_API void* pojavGetCurrentContext() {
-    switch (pojav_environ->config_renderer) {
-        case RENDERER_GL4ES:
-            return br_get_current();
-        case RENDERER_VIRGL:
-            return (void *)OSMesaGetCurrentContext_p();
-
-        default: return NULL;
+    if(pojav_environ->config_renderer == RENDERER_VK_ZINK || pojav_environ->config_renderer == RENDERER_GL4ES) {
+        return br_get_current();
+    } else if(pojav_environ->config_renderer == RENDERER_VIRGL) {
+        return (void *)OSMesaGetCurrentContext_p();
     }
 }
 
@@ -259,7 +256,7 @@ int pojavInitOpenGL() {
         setenv("GALLIUM_DRIVER","zink",1);
         set_osm_bridge_tbl();
     }
-    if(pojav_environ->config_renderer == RENDERER_GL4ES) {
+    if(pojav_environ->config_renderer == RENDERER_VK_ZINK || pojav_environ->config_renderer == RENDERER_GL4ES) {
         if(gl_init()) {
             br_setup_window();
             return 1;
@@ -430,7 +427,7 @@ void* egl_make_current(void* window) {
 
 EXTERNAL_API void pojavMakeCurrent(void* window) {
     if(getenv("POJAV_BIG_CORE_AFFINITY") != NULL) bigcore_set_affinity();
-    if(pojav_environ->config_renderer == RENDERER_GL4ES) {
+    if(pojav_environ->config_renderer == RENDERER_VK_ZINK || pojav_environ->config_renderer == RENDERER_GL4ES) {
         br_make_current((basic_render_window_t*)window);
     } else if (pojav_environ->config_renderer == RENDERER_VIRGL) {
         printf("OSMDroid: making current\n");
