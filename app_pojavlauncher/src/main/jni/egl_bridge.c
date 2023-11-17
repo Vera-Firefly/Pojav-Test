@@ -107,7 +107,6 @@ Java_net_kdt_pojavlaunch_utils_JREUtils_releaseBridgeWindow(ABI_COMPAT JNIEnv *e
 EXTERNAL_API void* pojavGetCurrentContext() {
     switch (pojav_environ->config_renderer) {
         case RENDERER_GL4ES:
-        case RENDERER_VK_ZINK:
             return br_get_current();
         case RENDERER_VIRGL:
             return (void *)OSMesaGetCurrentContext_p();
