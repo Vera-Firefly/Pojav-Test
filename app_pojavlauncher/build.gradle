@@ -86,7 +86,7 @@ configurations {
 }
 
 android {
-    namespace 'net.kdt.pojavlaunch.beta'
+    namespace 'net.kdt.pojavlaunch'
 
     compileSdk = 33
 
