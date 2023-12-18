@@ -86,7 +86,7 @@ configurations {
 }
 
 android {
-    namespace 'net.kdt.pojavlaunch'
+    namespace 'net.kdt.pojavlaunch.beta'
 
     compileSdk = 33
 
@@ -110,7 +110,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "net.kdt.pojavlaunch"
+        applicationId "net.kdt.pojavlaunch.beta"
         minSdkVersion 21
         targetSdkVersion 33
         versionCode getDateSeconds()
@@ -121,7 +121,7 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix '.beta.debug'
+            applicationIdSuffix '.debug'
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
