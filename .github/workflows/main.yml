@@ -74,3 +74,13 @@ jobs:
           # Build the launcher
 
           gradle :app_pojavlauncher:assembleDebug
+
+      - name: Upload APK
+
+        uses: actions/upload-artifact@v3
+
+        with:
+
+          name: app-debug-release
+
+          path: app_pojavlauncher/build/outputs/apk/debug/*
